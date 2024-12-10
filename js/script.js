@@ -8,10 +8,10 @@ const timerDisplay = document.getElementById('timer');
 
 // タイマー関連
 let timestamps = [];
+let timePoints = [0]; // 配列で時間管理（最初の0秒を格納）
 let elapsedTime = 0; // 現在の経過時間
 let isTimerRunning = false;
 let timerInterval = null;
-let lastStopTime = 0; // 前回のSTOP時刻を保持
 
 // 時間フォーマット補助関数
 function formatTime(seconds) {
@@ -33,8 +33,9 @@ startButton.addEventListener('click', () => {
     if (!isTimerRunning) {
         isTimerRunning = true;
 
-        // タイマー開始（前回のSTOP時刻から継続）
+        // タイマー開始（直前のSTOPを基準にする）
         const startTime = performance.now() / 1000;
+        const lastStopTime = timePoints[timePoints.length - 1];
         timerInterval = setInterval(() => {
             elapsedTime = performance.now() / 1000 - startTime + lastStopTime;
             updateTimerDisplay();
@@ -48,21 +49,16 @@ stopButton.addEventListener('click', () => {
         clearInterval(timerInterval); // タイマー停止
         isTimerRunning = false;
 
-        const stopTimestamp = elapsedTime; // 現在の経過時間
-        const startTimestamp = timestamps.length > 0 
-            ? parseFloat(timestamps[timestamps.length - 1].stop) 
-            : 0; // 前回のstopを次のstartに
+        // 現在の経過時間を格納
+        const stopTimestamp = elapsedTime;
+        timePoints.push(stopTimestamp); // 配列にSTOP時間を格納
 
-        if (stopTimestamp > startTimestamp) {
-            // タイムスタンプを記録
-            timestamps.push({
-                start: formatTime(startTimestamp),
-                stop: formatTime(stopTimestamp),
-            });
-        }
-
-        // 次回の再開のために現在の停止時刻を記録
-        lastStopTime = elapsedTime;
+        // タイムスタンプを記録
+        const startTimestamp = timePoints[timePoints.length - 2]; // 直前の時間がstart
+        timestamps.push({
+            start: formatTime(startTimestamp),
+            stop: formatTime(stopTimestamp),
+        });
 
         updateTimestamps();
     }
