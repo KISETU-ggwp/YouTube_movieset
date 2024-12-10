@@ -11,7 +11,7 @@ let timestamps = [];
 let elapsedTime = 0; // 現在の経過時間
 let isTimerRunning = false;
 let timerInterval = null;
-let lastStopTime = 0; // 前回のSTOP時間を保持
+let lastStopTime = 0; // 前回のSTOP時刻を保持
 
 // 時間フォーマット補助関数
 function formatTime(seconds) {
