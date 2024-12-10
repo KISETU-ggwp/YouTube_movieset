@@ -49,16 +49,20 @@ stopButton.addEventListener('click', () => {
         isTimerRunning = false;
 
         const stopTimestamp = elapsedTime; // 現在の経過時間
-        const startTimestamp = lastStopTime; // 前回のSTOPを開始時刻とする
+        const startTimestamp = timestamps.length > 0 
+            ? parseFloat(timestamps[timestamps.length - 1].stop) 
+            : 0; // 前回のstopを次のstartに
 
-        // タイムスタンプを記録
-        timestamps.push({
-            start: formatTime(startTimestamp),
-            stop: formatTime(stopTimestamp),
-        });
+        if (stopTimestamp > startTimestamp) {
+            // タイムスタンプを記録
+            timestamps.push({
+                start: formatTime(startTimestamp),
+                stop: formatTime(stopTimestamp),
+            });
+        }
 
         // 次回の再開のために現在の停止時刻を記録
-        lastStopTime = stopTimestamp;
+        lastStopTime = elapsedTime;
 
         updateTimestamps();
     }
