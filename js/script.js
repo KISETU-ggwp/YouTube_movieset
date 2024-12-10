@@ -23,7 +23,7 @@ function formatTime(seconds) {
     return `${hours}:${minutes}:${secs},${millis}`;
 }
 
-// タイマー更新関数
+// タイマー表示更新
 function updateTimerDisplay() {
     timerDisplay.textContent = formatTime(elapsedTime);
 }
@@ -33,9 +33,9 @@ startButton.addEventListener('click', () => {
     if (!isTimerRunning) {
         isTimerRunning = true;
 
-        // タイマーを開始
+        // タイマー開始（前回のSTOP時刻から継続）
         timerInterval = setInterval(() => {
-            elapsedTime += 0.01; // 10msごとに増加
+            elapsedTime = performance.now() / 1000 - lastStopTime;
             updateTimerDisplay();
         }, 10); // 10ms間隔で更新
     }
@@ -48,7 +48,8 @@ stopButton.addEventListener('click', () => {
         isTimerRunning = false;
 
         const stopTimestamp = elapsedTime; // 現在の経過時間
-        const startTimestamp = lastStopTime; // 前回のSTOPを開始時刻とする
+        const startTimestamp =
+            timestamps.length > 0 ? parseFloat(timestamps[timestamps.length - 1].stop) : 0; // 前回のstopをstartに
 
         if (stopTimestamp > startTimestamp) {
             // タイムスタンプを記録
@@ -56,8 +57,11 @@ stopButton.addEventListener('click', () => {
                 start: formatTime(startTimestamp),
                 stop: formatTime(stopTimestamp),
             });
-            lastStopTime = stopTimestamp; // 最後のSTOP時刻を更新
         }
+
+        // 次回の再開のために現在の停止時刻を記録
+        lastStopTime = performance.now() / 1000;
+
         updateTimestamps();
     }
 });
