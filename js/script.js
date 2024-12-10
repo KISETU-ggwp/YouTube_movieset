@@ -1,4 +1,3 @@
-// 要素取得
 const videoPlayer = document.getElementById('video-player');
 const timestampsTextarea = document.getElementById('timestamps');
 const startButton = document.getElementById('start-button');
