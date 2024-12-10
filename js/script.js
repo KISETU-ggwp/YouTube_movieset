@@ -1,10 +1,11 @@
 // YouTubeのiframe生成とタイムスタンプ管理
 const videoPlayer = document.getElementById('video-player');
 const timestampsTextarea = document.getElementById('timestamps');
-const addTimestampButton = document.getElementById('add-timestamp');
+const startButton = document.getElementById('start-button');
+const stopButton = document.getElementById('stop-button');
 const downloadSrtButton = document.getElementById('download-srt');
 
-// ボタンでYouTube動画を切り替える
+// YouTube動画切り替え
 document.querySelectorAll('.youtube-url').forEach(button => {
     button.addEventListener('click', () => {
         const videoUrl = button.getAttribute('data-url');
@@ -17,23 +18,52 @@ document.querySelectorAll('.youtube-url').forEach(button => {
 
 // タイムスタンプリスト
 let timestamps = [];
+let startTime = null;
 
-// タイムスタンプ追加
-addTimestampButton.addEventListener('click', () => {
-    const currentTime = new Date().toISOString().substr(11, 8); // 現在の時刻を簡易的に使用
-    timestamps.push(currentTime);
-    updateTimestamps();
+// 時間フォーマット補助関数
+function formatTime(seconds) {
+    const date = new Date(seconds * 1000);
+    const hours = String(date.getUTCHours()).padStart(2, '0');
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+    const secs = String(date.getUTCSeconds()).padStart(2, '0');
+    const millis = String(date.getUTCMilliseconds()).padStart(3, '0');
+    return `${hours}:${minutes}:${secs},${millis}`;
+}
+
+// STARTボタン
+startButton.addEventListener('click', () => {
+    if (startTime === null) {
+        startTime = performance.now() / 1000; // 秒単位で取得
+        alert('タイマーを開始しました');
+    }
+});
+
+// STOPボタン
+stopButton.addEventListener('click', () => {
+    if (startTime !== null) {
+        const stopTime = performance.now() / 1000; // 秒単位で取得
+        const duration = {
+            start: formatTime(startTime),
+            stop: formatTime(stopTime),
+        };
+        timestamps.push(duration);
+        startTime = null; // リセット
+        updateTimestamps();
+        alert('タイマーを停止しました');
+    }
 });
 
 // タイムスタンプ表示更新
 function updateTimestamps() {
-    timestampsTextarea.value = timestamps.map((time, index) => `${index + 1}\n${time}\n`).join('\n');
+    timestampsTextarea.value = timestamps
+        .map((time, index) => `${index + 1}\n${time.start} --> ${time.stop}\n字幕内容をここに入力\n`)
+        .join('\n');
 }
 
 // SRTファイルをダウンロード
 downloadSrtButton.addEventListener('click', () => {
     const srtContent = timestamps
-        .map((time, index) => `${index + 1}\n00:${time},000 --> 00:${time},999\n字幕内容をここに入力\n`)
+        .map((time, index) => `${index + 1}\n${time.start} --> ${time.stop}\n字幕内容をここに入力\n`)
         .join('\n');
     const blob = new Blob([srtContent], { type: 'text/plain' });
     const a = document.createElement('a');
