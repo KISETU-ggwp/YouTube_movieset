@@ -1,3 +1,4 @@
+// 要素取得
 const videoPlayer = document.getElementById('video-player');
 const timestampsTextarea = document.getElementById('timestamps');
 const startButton = document.getElementById('start-button');
@@ -7,8 +8,7 @@ const timerDisplay = document.getElementById('timer');
 
 // タイマー関連
 let timestamps = [];
-let timerStartTime = null;
-let elapsedTime = 0; // 経過時間
+let elapsedTime = 0; // 現在の経過時間
 let isTimerRunning = false;
 let timerInterval = null;
 
@@ -30,17 +30,14 @@ function updateTimerDisplay() {
 // STARTボタン
 startButton.addEventListener('click', () => {
     if (!isTimerRunning) {
-        if (timerStartTime === null) {
-            elapsedTime = 0; // 初回は0秒から開始
-        }
-        timerStartTime = performance.now() / 1000 - elapsedTime; // 再開時も考慮
+        const startTimestamp = elapsedTime; // 現在の経過時間を記録
         isTimerRunning = true;
 
         // タイマーを開始
         timerInterval = setInterval(() => {
-            elapsedTime = performance.now() / 1000 - timerStartTime;
+            elapsedTime += 0.01; // 10msごとに増加
             updateTimerDisplay();
-        }, 10); // 10msごとに更新
+        }, 10); // 10ms間隔で更新
     }
 });
 
@@ -50,13 +47,12 @@ stopButton.addEventListener('click', () => {
         clearInterval(timerInterval); // タイマー停止
         isTimerRunning = false;
 
-        // 開始時間と終了時間を記録
-        const stopTime = elapsedTime;
-        const duration = {
-            start: formatTime(timerStartTime),
-            stop: formatTime(stopTime),
-        };
-        timestamps.push(duration);
+        // タイムスタンプを記録
+        const stopTimestamp = elapsedTime; // 現在の経過時間
+        timestamps.push({
+            start: formatTime(timestamps.length > 0 ? timestamps[timestamps.length - 1].stop : 0), // 前回の終了時刻を開始時刻として使用
+            stop: formatTime(stopTimestamp),
+        });
         updateTimestamps();
     }
 });
