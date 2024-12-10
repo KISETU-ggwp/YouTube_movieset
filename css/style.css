@@ -1,0 +1,40 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.container {
+    display: flex;
+    width: 80%;
+    margin: 20px auto;
+}
+
+.video-section,
+.timestamp-section {
+    flex: 1;
+    padding: 10px;
+}
+
+#video-player {
+    width: 100%;
+    height: 300px;
+    background-color: #000;
+}
+
+#timestamps {
+    width: 100%;
+    height: 150px;
+    margin-top: 10px;
+}
+
+#timestamp-controls button {
+    margin-right: 10px;
+}
+
+.url-buttons {
+    margin-top: 20px;
+}

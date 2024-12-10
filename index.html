@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube動画とタイムスタンプ生成</title>
+    <link rel="stylesheet" href="css\style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="video-section">
+            <h2>動画</h2>
+            <div id="video-player"></div>
+        </div>
+        <div class="timestamp-section">
+            <h2>タイムスタンプ生成</h2>
+            <div id="timestamp-controls">
+                <button id="add-timestamp">タイムスタンプ追加</button>
+                <button id="download-srt">SRTファイルダウンロード</button>
+            </div>
+            <textarea id="timestamps" placeholder="タイムスタンプがここに表示されます..." readonly></textarea>
+        </div>
+    </div>
+    <div class="url-buttons">
+        <h3>YouTube URLボタン</h3>
+        <button class="youtube-url" data-url="https://www.youtube.com/watch?v=I8rUNBoXT3Y">生物系1m</button>
+        <button class="youtube-url" data-url="https://www.youtube.com/watch?v=YD7DdXBb7fQ">生物系2m</button>
+        <button class="youtube-url" data-url="https://www.youtube.com/watch?v=NgKshOa9jLg">生物系4m</button>
+        <button class="youtube-url" data-url="https://www.youtube.com/watch?v=_x2AQxYii9U">恐竜系1m</button>
+        <button class="youtube-url" data-url="https://www.youtube.com/watch?v=nMHpsQVRYj4">恐竜系2m</button>
+        <button class="youtube-url" data-url="https://www.youtube.com/watch?v=DNqFEY05j94">恐竜系4m</button>
+        <button class="youtube-url" data-url="https://www.youtube.com/watch?v=l9YElfWRGMM">自然環境系1m</button>
+        <button class="youtube-url" data-url="https://www.youtube.com/watch?v=u9jmPC4e_6M">自然環境系2m</button>
+        <button class="youtube-url" data-url="https://www.youtube.com/watch?v=eXiw-3coUmM">自然環境系4m</button>
+    </div>
+
+    <script src="js\script.js"></script>
+</body>
+</html>
