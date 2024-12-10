@@ -1,24 +1,17 @@
-// YouTubeのiframe生成とタイムスタンプ管理
+// 要素取得
 const videoPlayer = document.getElementById('video-player');
 const timestampsTextarea = document.getElementById('timestamps');
 const startButton = document.getElementById('start-button');
 const stopButton = document.getElementById('stop-button');
 const downloadSrtButton = document.getElementById('download-srt');
+const timerDisplay = document.getElementById('timer');
 
-// YouTube動画切り替え
-document.querySelectorAll('.youtube-url').forEach(button => {
-    button.addEventListener('click', () => {
-        const videoUrl = button.getAttribute('data-url');
-        const videoId = new URL(videoUrl).searchParams.get('v');
-        videoPlayer.innerHTML = `
-            <iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>
-        `;
-    });
-});
-
-// タイムスタンプリスト
+// タイマー関連
 let timestamps = [];
-let startTime = null;
+let timerStartTime = null;
+let elapsedTime = 0; // 経過時間
+let isTimerRunning = false;
+let timerInterval = null;
 
 // 時間フォーマット補助関数
 function formatTime(seconds) {
@@ -30,26 +23,42 @@ function formatTime(seconds) {
     return `${hours}:${minutes}:${secs},${millis}`;
 }
 
+// タイマー更新関数
+function updateTimerDisplay() {
+    timerDisplay.textContent = formatTime(elapsedTime);
+}
+
 // STARTボタン
 startButton.addEventListener('click', () => {
-    if (startTime === null) {
-        startTime = performance.now() / 1000; // 秒単位で取得
-        alert('タイマーを開始しました');
+    if (!isTimerRunning) {
+        if (timerStartTime === null) {
+            elapsedTime = 0; // 初回は0秒から開始
+        }
+        timerStartTime = performance.now() / 1000 - elapsedTime; // 再開時も考慮
+        isTimerRunning = true;
+
+        // タイマーを開始
+        timerInterval = setInterval(() => {
+            elapsedTime = performance.now() / 1000 - timerStartTime;
+            updateTimerDisplay();
+        }, 10); // 10msごとに更新
     }
 });
 
 // STOPボタン
 stopButton.addEventListener('click', () => {
-    if (startTime !== null) {
-        const stopTime = performance.now() / 1000; // 秒単位で取得
+    if (isTimerRunning) {
+        clearInterval(timerInterval); // タイマー停止
+        isTimerRunning = false;
+
+        // 開始時間と終了時間を記録
+        const stopTime = elapsedTime;
         const duration = {
-            start: formatTime(startTime),
+            start: formatTime(timerStartTime),
             stop: formatTime(stopTime),
         };
         timestamps.push(duration);
-        startTime = null; // リセット
         updateTimestamps();
-        alert('タイマーを停止しました');
     }
 });
 
@@ -70,4 +79,15 @@ downloadSrtButton.addEventListener('click', () => {
     a.href = URL.createObjectURL(blob);
     a.download = 'subtitles.srt';
     a.click();
+});
+
+// YouTube動画切り替え
+document.querySelectorAll('.youtube-url').forEach(button => {
+    button.addEventListener('click', () => {
+        const videoUrl = button.getAttribute('data-url');
+        const videoId = new URL(videoUrl).searchParams.get('v');
+        videoPlayer.innerHTML = `
+            <iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>
+        `;
+    });
 });
