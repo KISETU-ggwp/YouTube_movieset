@@ -30,7 +30,6 @@ function updateTimerDisplay() {
 // STARTボタン
 startButton.addEventListener('click', () => {
     if (!isTimerRunning) {
-        const startTimestamp = elapsedTime; // 現在の経過時間を記録
         isTimerRunning = true;
 
         // タイマーを開始
@@ -49,10 +48,15 @@ stopButton.addEventListener('click', () => {
 
         // タイムスタンプを記録
         const stopTimestamp = elapsedTime; // 現在の経過時間
-        timestamps.push({
-            start: formatTime(timestamps.length > 0 ? timestamps[timestamps.length - 1].stop : 0), // 前回の終了時刻を開始時刻として使用
-            stop: formatTime(stopTimestamp),
-        });
+        const startTimestamp =
+            timestamps.length > 0 ? timestamps[timestamps.length - 1].stop : 0; // 直前のstopが次のstart
+
+        if (stopTimestamp > startTimestamp) {
+            timestamps.push({
+                start: formatTime(startTimestamp),
+                stop: formatTime(stopTimestamp),
+            });
+        }
         updateTimestamps();
     }
 });
