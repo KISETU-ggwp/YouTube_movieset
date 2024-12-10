@@ -11,6 +11,7 @@ let timestamps = [];
 let elapsedTime = 0; // 現在の経過時間
 let isTimerRunning = false;
 let timerInterval = null;
+let lastStopTime = 0; // 前回のSTOP時間を保持
 
 // 時間フォーマット補助関数
 function formatTime(seconds) {
@@ -46,16 +47,16 @@ stopButton.addEventListener('click', () => {
         clearInterval(timerInterval); // タイマー停止
         isTimerRunning = false;
 
-        // タイムスタンプを記録
         const stopTimestamp = elapsedTime; // 現在の経過時間
-        const startTimestamp =
-            timestamps.length > 0 ? timestamps[timestamps.length - 1].stop : 0; // 直前のstopが次のstart
+        const startTimestamp = lastStopTime; // 前回のSTOPを開始時刻とする
 
         if (stopTimestamp > startTimestamp) {
+            // タイムスタンプを記録
             timestamps.push({
                 start: formatTime(startTimestamp),
                 stop: formatTime(stopTimestamp),
             });
+            lastStopTime = stopTimestamp; // 最後のSTOP時刻を更新
         }
         updateTimestamps();
     }
