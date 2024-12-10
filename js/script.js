@@ -34,8 +34,9 @@ startButton.addEventListener('click', () => {
         isTimerRunning = true;
 
         // タイマー開始（前回のSTOP時刻から継続）
+        const startTime = performance.now() / 1000;
         timerInterval = setInterval(() => {
-            elapsedTime = performance.now() / 1000 - lastStopTime;
+            elapsedTime = performance.now() / 1000 - startTime + lastStopTime;
             updateTimerDisplay();
         }, 10); // 10ms間隔で更新
     }
@@ -48,19 +49,16 @@ stopButton.addEventListener('click', () => {
         isTimerRunning = false;
 
         const stopTimestamp = elapsedTime; // 現在の経過時間
-        const startTimestamp =
-            timestamps.length > 0 ? parseFloat(timestamps[timestamps.length - 1].stop) : 0; // 前回のstopをstartに
+        const startTimestamp = lastStopTime; // 前回のSTOPを開始時刻とする
 
-        if (stopTimestamp > startTimestamp) {
-            // タイムスタンプを記録
-            timestamps.push({
-                start: formatTime(startTimestamp),
-                stop: formatTime(stopTimestamp),
-            });
-        }
+        // タイムスタンプを記録
+        timestamps.push({
+            start: formatTime(startTimestamp),
+            stop: formatTime(stopTimestamp),
+        });
 
         // 次回の再開のために現在の停止時刻を記録
-        lastStopTime = performance.now() / 1000;
+        lastStopTime = stopTimestamp;
 
         updateTimestamps();
     }
